@@ -77,6 +77,12 @@ def save_aad_auditlogs(auditlog_type, tenant_id, client_id, client_secret, stora
         
         log("Get " + graph_uri + " returned status_code=" + str(response.status_code) + "; content_length=" + str(content_length))
 
+        if response.status_code == 403:
+            log("Permission denied, exiting.")
+            log("Headers: " + str(response.headers))
+            log("Content: " + response.text)
+            return
+
         if response.status_code == 429:
             log("Request was throttled, waiting 10 seconds...")
             log("Headers: " + str(response.headers))
