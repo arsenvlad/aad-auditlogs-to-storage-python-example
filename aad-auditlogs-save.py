@@ -124,6 +124,8 @@ def main():
     storage_account = ""
 
     save_aad_auditlogs("directoryAudits", tenant_id, client_id, client_secret, storage_account, "logs-audit")
+
+    # AAD signIns report is only available for Azure AD Premium P1 or higher and will return an error for non-premium AAD tenants.
     save_aad_auditlogs("signIns", tenant_id, client_id, client_secret, storage_account, "logs-signin")
 
 main()
