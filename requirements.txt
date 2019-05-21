@@ -1,0 +1,4 @@
+adal>=1.2.1
+requests>=2.22.0
+azure_common>=1.1.20
+azure-storage-blob>=1.5.0
