@@ -8,12 +8,12 @@ from azure.storage.blob import BlockBlobService
 from azure.storage.blob import ContentSettings
 from azure.storage.common import TokenCredential
 
-# Azure Public Cloud Credentials
+# Azure Public Cloud Endpoints
 # AAD_ENDPOINT_URI = "https://login.microsoftonline.com/"
 # GRAPH_ENDPOINT_URI = "https://graph.microsoft.com/"
 # STORAGE_ENDPOINT_SUFFIX = "core.windows.net"
 
-# Azure Gov Cloud Credentials
+# Azure Gov Cloud Endpoints
 AAD_ENDPOINT_URI = "https://login.microsoftonline.us/"
 GRAPH_ENDPOINT_URI = "https://graph.microsoft.us/"
 STORAGE_ENDPOINT_SUFFIX = "core.usgovcloudapi.net"
