@@ -9,9 +9,9 @@ from azure.storage.blob import ContentSettings
 from azure.storage.common import TokenCredential
 
 # Azure Public Cloud Endpoints
-# AAD_ENDPOINT_URI = "https://login.microsoftonline.com/"
-# GRAPH_ENDPOINT_URI = "https://graph.microsoft.com/"
-# STORAGE_ENDPOINT_SUFFIX = "core.windows.net"
+#AAD_ENDPOINT_URI = "https://login.microsoftonline.com/"
+#GRAPH_ENDPOINT_URI = "https://graph.microsoft.com/"
+#STORAGE_ENDPOINT_SUFFIX = "core.windows.net"
 
 # Azure Gov Cloud Endpoints
 AAD_ENDPOINT_URI = "https://login.microsoftonline.us/"
@@ -67,29 +67,44 @@ def save_aad_auditlogs(auditlog_type, tenant_id, client_id, client_secret, stora
     max_record_datetime = last_datetime
 
     # May need to loop multiple times to get all of the data and retry throttled requestes with status code 429
-    while True:
+    request_count = 0
+    error_count = 0
+    max_requests = 100
+    max_errors = 50
+    while request_count < max_requests and error_count < max_errors:
+        request_count += 1
+
         # Issue Graph API request
         session = requests.Session()
         session.headers.update({'Authorization': "Bearer " + graph_token_response['accessToken']})
         response = session.get(graph_uri)
         content_length = len(response.content)
         response_json = response.json()
-        
-        log("Get " + graph_uri + " returned status_code=" + str(response.status_code) + "; content_length=" + str(content_length))
 
-        if response.status_code == 403:
-            log("Permission denied, exiting.")
+        log("Get " + graph_uri + " returned status_code=" + str(response.status_code) + "; content_length=" + str(content_length) + "; requests=" + str(request_count) + "/" + str(max_requests) + "; errors=" + str(error_count) + "/" + str(max_errors))
+
+        if response.status_code != 200:
+            error_count += 1
+            log("*** ERROR ***")
             log("Headers: " + str(response.headers))
             log("Content: " + response.text)
-            return
+            
+            if response.status_code == 403:
+                # Exit immediately
+                log("Permission denied, existing.")
+                return
+            elif response.status_code == 429:
+                # Pause for longer when throttled
+                log("Request was throttled, waiting 10 seconds...")
+                time.sleep(10.0)
+                continue
+            else:
+                # Pause before retry
+                log("Waiting 5 seconds...")
+                time.sleep(5.0)
+                continue
 
-        if response.status_code == 429:
-            log("Request was throttled, waiting 10 seconds...")
-            log("Headers: " + str(response.headers))
-            log("Content: " + response.text)
-            time.sleep(10.0)
-            continue
-
+        # Check if received valid response
         if 'value' in response_json:
             count = len(response_json['value'])
 
