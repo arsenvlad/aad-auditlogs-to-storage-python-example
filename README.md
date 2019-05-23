@@ -9,7 +9,7 @@ This sample code shows how to use [Azure Active Directory reporting APIs](https:
 
 NOTE: Download of signIns requires Azure Active Directory Premium license.
 
-To use this sample, you will need to create a Service Principal (i.e. Azure AD application) and grant it permission to **Microsoft.Graph AuditLog.Read.All** as shown below. You also need to assign the same application data-plane **Storage Blob Contributor** role to the storage account into which logs will be saved. Storage account must be GPv2 to support OAuth bearer token authentication instead of shared key or SAS.
+To use this sample, you will need to create a Service Principal (i.e. Azure AD application) and grant it permission to **Microsoft.Graph AuditLog.Read.All** as shown below. You also need to assign the same application data-plane [**Storage Data Blob Contributor**](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-contributor) role to the storage account into which logs will be saved. Storage account must be GPv2 to support OAuth bearer token authentication instead of shared key or SAS.
 ![](images/app-permission.png)
 
 When process executes the first time, it downloads as many logs as it can within the last X days. On subsequent executions, the process tries to only download most recent data by keeping track of the last_datetime in the storage container metadata.
